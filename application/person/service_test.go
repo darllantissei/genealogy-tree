@@ -66,3 +66,48 @@ func TestPersonService_Record(t *testing.T) {
 	require.Equal(t, personExpected, personRecorded, "The person updated must be returned as expected")
 
 }
+
+func TestPersonService_Fetch(t *testing.T) {
+
+	const testFetchPerson = "test_fetch_person"
+
+	ctrl := gomock.NewController(t)
+
+	defer ctrl.Finish()
+
+	ctx := context.Background()
+
+	persistenceDB := mockperson.NewMockIPersonPersistenceDB(ctrl)
+
+	personService := PersonService{
+		PersistenceDB: persistenceDB,
+	}
+
+	ctx = context.WithValue(ctx, contextKey(testFetchPerson), "Fetch a person")
+
+	mockPersonFetch := model.Person{
+		ID:        "15eec2f9-36ac-48b6-aa63-13d9fab89ec9",
+		FirstName: "John",
+		LastName:  "Wick",
+		Gender:    gender.Masculine,
+	}
+
+	persistenceDB.EXPECT().Get(ctx, model.Person{ID: mockPersonFetch.ID}).Return(mockPersonFetch, nil)
+
+	personFetched, err := personService.Fetch(ctx, model.Person{ID: "15eec2f9-36ac-48b6-aa63-13d9fab89ec9"})
+
+	require.Nil(t, err, "The person fetched success, error must be nil")
+
+	require.Equal(t, mockPersonFetch, personFetched, "The person fetched must be same of mock")
+
+	ctx = context.WithValue(ctx, contextKey(testFetchPerson), "Fetch a person with no record")
+
+	persistenceDB.EXPECT().Get(ctx, model.Person{ID: "84763d21-497d-41f3-8381-727724914576"}).Return(model.Person{}, nil)
+
+	personFetched, err = personService.Fetch(ctx, model.Person{ID: "84763d21-497d-41f3-8381-727724914576"})
+
+	require.Nil(t, err, "The person fetched success, error must be nil")
+
+	require.Empty(t, personFetched, "The person not found, the struct must be returned empty")
+
+}

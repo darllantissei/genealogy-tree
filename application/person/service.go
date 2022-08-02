@@ -39,5 +39,22 @@ func (p *PersonService) Record(ctx context.Context, prsn model.Person) (model.Pe
 	return prsn, err
 }
 func (p *PersonService) Fetch(ctx context.Context, prsn model.Person) (model.Person, error) {
-	panic("not implemented")
+
+	var (
+		err error
+	)
+
+	err = p.checkDependencyInjection(ctx)
+
+	if err != nil {
+		return model.Person{}, common.BuildError(ctx, []string{err.Error()})
+	}
+
+	prsn, err = p.PersistenceDB.Get(ctx, prsn)
+
+	if err != nil {
+		return model.Person{}, common.BuildError(ctx, []string{err.Error()})
+	}
+
+	return prsn, nil
 }
