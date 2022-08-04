@@ -2,7 +2,7 @@ package model
 
 import enumrelationship "github.com/darllantissei/genealogy-tree/application/enum/relationship"
 
-type RelationshipLink struct {
+type RelationshipMember struct {
 	PersonID       string
 	RelationshipID string
 	Type           enumrelationship.Relationship

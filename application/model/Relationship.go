@@ -5,7 +5,7 @@ import "reflect"
 type Relationship struct {
 	ID       string
 	PersonID string
-	Links    []RelationshipLink
+	Members  []RelationshipMember
 }
 
 func (rtshp *Relationship) IsEmpty() bool {
