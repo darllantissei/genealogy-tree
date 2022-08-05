@@ -13,7 +13,7 @@ import (
 type Relationship int64
 
 const (
-	Undefined Relationship = iota // 0 - Indefinido - Gênero não definido
+	Undefined Relationship = iota // 0 - Indefinido - Relacionamento não definido
 	Parent                        // 1 - Pais
 	Child                         // 2 - Filhos
 	Spouse                        // 3 - Cônjuge
