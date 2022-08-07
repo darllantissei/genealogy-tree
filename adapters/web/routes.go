@@ -2,6 +2,7 @@ package web
 
 import (
 	personweb "github.com/darllantissei/genealogy-tree/adapters/web/person"
+	relationshipweb "github.com/darllantissei/genealogy-tree/adapters/web/relationship"
 	"github.com/labstack/echo"
 )
 
@@ -26,23 +27,22 @@ func (ws *WebServer) personRoutes(route *echo.Group) {
 
 	personGroup.POST("", personWeb.RecordHandler)
 
-}
-
-func (ws *WebServer) relationshipRoutes(route *echo.Group) {
-
-	personWeb := personweb.PersonWeb{
-		ApplicationService: ws.ApplicationService,
-		CommonWeb:          ws.commonWeb,
-	}
-
-	personGroup := route.Group("/person")
-
-	personGroup.POST("", personWeb.RecordHandler)
-
 	personGroup.GET("", personWeb.ListHandler)
 
 	personGroup.GET("/:person_id", personWeb.GetHandler)
 
 	personGroup.PUT("/:person_id", personWeb.UpdateHandler)
 
+}
+
+func (ws *WebServer) relationshipRoutes(route *echo.Group) {
+
+	relationshipWeb := relationshipweb.RelationshipWeb{
+		ApplicationService: ws.ApplicationService,
+		CommonWeb:          ws.commonWeb,
+	}
+
+	relationshipGroup := route.Group("/relationship")
+
+	relationshipGroup.POST("", relationshipWeb.CreateHandler)
 }

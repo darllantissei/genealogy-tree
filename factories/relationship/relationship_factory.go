@@ -3,14 +3,18 @@ package factoryperson
 import (
 	"sync"
 
-	servicerelationship "github.com/darllantissei/genealogy-tree/application/relationship"
+	dbcommon "github.com/darllantissei/genealogy-tree/adapters/db/sqlite/common"
 	dbconnectionrelationship "github.com/darllantissei/genealogy-tree/adapters/db/sqlite/relationship"
+	servicecommon "github.com/darllantissei/genealogy-tree/application/common"
+	servicerelationship "github.com/darllantissei/genealogy-tree/application/relationship"
 )
 
 type FactoryRelationship struct {
+	CommonDB            dbcommon.CommonDB
+	CommonService       servicecommon.ICommonService
 	serviceRelationship *servicerelationship.RelationshipService
-	dbconnection  *dbconnectionrelationship.RelationshipDB
-	lockFlow      *sync.Mutex
+	dbconnection        *dbconnectionrelationship.RelationshipDB
+	lockFlow            *sync.Mutex
 }
 
 func (fr *FactoryRelationship) NewDataBaseConnection() *dbconnectionrelationship.RelationshipDB {
@@ -58,6 +62,7 @@ func (fr *FactoryRelationship) NewService() *servicerelationship.RelationshipSer
 
 		fr.serviceRelationship = &servicerelationship.RelationshipService{
 			PersistenceDB: fr.NewDataBaseConnection(),
+			CommonService: fr.CommonService,
 		}
 
 	}

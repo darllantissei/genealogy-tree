@@ -9,7 +9,7 @@ import (
 
 type RelationshipService struct {
 	PersistenceDB IRelationshipPersistenceDB
-	common        common.CommonService
+	CommonService common.ICommonService
 }
 
 func (r *RelationshipService) Create(ctx context.Context, rtshp model.Relationship) (model.Relationship, error) {
@@ -17,13 +17,13 @@ func (r *RelationshipService) Create(ctx context.Context, rtshp model.Relationsh
 	err := r.checkDependencyInjection(ctx)
 
 	if err != nil {
-		return model.Relationship{}, r.common.BuildError(ctx, []string{err.Error()})
+		return model.Relationship{}, r.CommonService.BuildError(ctx, []string{err.Error()})
 	}
 
 	msgErr := r.checkRelationship(ctx, rtshp)
 
 	if len(msgErr) > 0 {
-		return model.Relationship{}, r.common.BuildError(ctx, msgErr)
+		return model.Relationship{}, r.CommonService.BuildError(ctx, msgErr)
 	}
 
 	panic("not implemented")

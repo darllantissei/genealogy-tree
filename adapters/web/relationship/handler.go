@@ -14,7 +14,7 @@ type RelationshipWeb struct {
 	CommonWeb          commonweb.Common
 }
 
-func (rw *RelationshipWeb) RecordHandler(ectx echo.Context) error {
+func (rw *RelationshipWeb) CreateHandler(ectx echo.Context) error {
 
 	req := ectx.Request()
 

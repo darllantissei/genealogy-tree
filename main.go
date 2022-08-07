@@ -47,10 +47,13 @@ func main() {
 
 	factoryPerson := factoryperson.FactoryPerson{
 		CommonDB:      *dbcommon.NewCommon(sourceDataBase),
-		CommonService: *factoryCommonService.NewService(),
+		CommonService: factoryCommonService.NewService(),
 	}
 
-	factoryRelationship := factoryrelationship.FactoryRelationship{}
+	factoryRelationship := factoryrelationship.FactoryRelationship{
+		CommonDB:      *dbcommon.NewCommon(sourceDataBase),
+		CommonService: factoryCommonService.NewService(),
+	}
 
 	application := application.Application{
 		CommonService:       factoryCommonService.NewService(),
