@@ -49,20 +49,6 @@ func (mr *MockICommonServiceMockRecorder) BuildError(ctx, msgErr interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuildError", reflect.TypeOf((*MockICommonService)(nil).BuildError), ctx, msgErr)
 }
 
-// GetUUID mocks base method.
-func (m *MockICommonService) GetUUID() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUUID")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
-
-// GetUUID indicates an expected call of GetUUID.
-func (mr *MockICommonServiceMockRecorder) GetUUID() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUUID", reflect.TypeOf((*MockICommonService)(nil).GetUUID))
-}
-
 // SliceExists mocks base method.
 func (m *MockICommonService) SliceExists(slice, item interface{}) bool {
 	m.ctrl.T.Helper()

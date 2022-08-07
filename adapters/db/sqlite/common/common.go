@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	log "github.com/sirupsen/logrus"
+	gouuid "github.com/satori/go.uuid"
 )
 
 type CommonDB struct {
@@ -19,6 +20,13 @@ func NewCommon(fileDataBase string) *CommonDB {
 	return &CommonDB{
 		sourceDB: fileDataBase,
 	}
+}
+
+func (c *CommonDB) GetUUID() string {
+
+	uuid := gouuid.NewV4()
+
+	return uuid.String()
 }
 
 func (c *CommonDB) TreatError(err error, messageNewError string) error {

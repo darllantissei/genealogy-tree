@@ -6,6 +6,7 @@ import (
 
 	"github.com/darllantissei/genealogy-tree/application/enum/relationship"
 	"github.com/darllantissei/genealogy-tree/application/model"
+	mockperson "github.com/darllantissei/genealogy-tree/mocks/person"
 	mockrelationship "github.com/darllantissei/genealogy-tree/mocks/relationship"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -80,12 +81,15 @@ func TestRelationshipService_relationshipUnallowed(t *testing.T) {
 
 	persistenceDB := mockrelationship.NewMockIRelationshipPersistenceDB(ctrl)
 
+	personService := mockperson.NewMockIPersonService(ctrl)
+
 	ctx := context.Background()
 
 	ctx = context.WithValue(ctx, contextKey(testRelationshipUnallowed), "Unallowed incest between sibling")
 
 	relationshipService := RelationshipService{
 		PersistenceDB: persistenceDB,
+		PersonService: personService,
 	}
 
 	mockRelationship := model.Relationship{
@@ -100,6 +104,8 @@ func TestRelationshipService_relationshipUnallowed(t *testing.T) {
 
 	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca"}).
 		Return(model.Relationship{PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca", Members: []model.RelationshipMember{{PersonID: "2910f588-9189-4f45-929b-3c3883326e2e", Type: relationship.Sibling}}}, nil).AnyTimes()
+
+	personService.EXPECT().Fetch(ctx, model.Person{ID: "aa0063dc-734b-4215-8d34-a65a598b1dca"}).Return(model.Person{ID: "aa0063dc-734b-4215-8d34-a65a598b1dca", FirstName: "Eita", LastName: "Em cima de eita"}, nil).AnyTimes()
 
 	err := relationshipService.relationshipUnallowed(ctx, mockRelationship)
 
@@ -148,8 +154,47 @@ func TestRelationshipService_relationshipUnallowed(t *testing.T) {
 
 	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e"}).Return(mockRelationshipINDB, nil)
 
+	personService.EXPECT().Fetch(ctx, model.Person{ID: "5537b45d-81de-44b9-9221-00b7ebdbb7bf"}).Return(model.Person{ID: "5537b45d-81de-44b9-9221-00b7ebdbb7bf", FirstName: "Olha", LastName: "A bagunça"}, nil)
+
 	err = relationshipService.relationshipUnallowed(ctx, mockRelationship)
 
 	require.NotNil(t, err, "Occurred relationship unallowed, then will returned error")
+
+}
+
+func TestRelationshipService_checkPersonExistis(t *testing.T) {
+
+	const testCheckPersonExists = "test_person_exists"
+
+	ctrl := gomock.NewController(t)
+
+	defer ctrl.Finish()
+
+	persistenceDB := mockrelationship.NewMockIRelationshipPersistenceDB(ctrl)
+
+	personService := mockperson.NewMockIPersonService(ctrl)
+
+	ctx := context.Background()
+
+	ctx = context.WithValue(ctx, contextKey(testCheckPersonExists), "person not exists")
+
+	relationshipService := RelationshipService{
+		PersistenceDB: persistenceDB,
+		PersonService: personService,
+	}
+
+	mockPersonID := "12lk3j12k3l"
+
+	personService.EXPECT().Fetch(ctx, model.Person{ID: mockPersonID}).Return(model.Person{}, nil)
+
+	msgErr := relationshipService.checkPersonExistis(ctx, model.Relationship{PersonID: mockPersonID})
+
+	require.Greater(t, len(msgErr), 0, "The person not found, will returned error in list")
+
+	personService.EXPECT().Fetch(ctx, model.Person{ID: mockPersonID}).Return(model.Person{ID: mockPersonID}, nil)
+
+	msgErr = relationshipService.checkPersonExistis(ctx, model.Relationship{PersonID: mockPersonID})
+
+	require.Empty(t, msgErr, "The person exist, then list error will return empty")
 
 }

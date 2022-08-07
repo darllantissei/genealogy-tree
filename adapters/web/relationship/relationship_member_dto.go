@@ -5,7 +5,7 @@ import (
 	enumrelationship "github.com/darllantissei/genealogy-tree/application/enum/relationship"
 )
 
-type RelationshipMember struct {
+type RelationshipMemberDTO struct {
 	XMLName        struct{}                      `json:"-" xml:"member"`
 	PersonID       string                        `json:"person_id,omitempty" xml:"person_id"`
 	RelationshipID string                        `json:"relationship_id,omitempty" xml:"relationship_id"`

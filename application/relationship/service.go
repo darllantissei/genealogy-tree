@@ -5,11 +5,13 @@ import (
 
 	"github.com/darllantissei/genealogy-tree/application/common"
 	"github.com/darllantissei/genealogy-tree/application/model"
+	"github.com/darllantissei/genealogy-tree/application/person"
 )
 
 type RelationshipService struct {
 	PersistenceDB IRelationshipPersistenceDB
 	CommonService common.ICommonService
+	PersonService person.IPersonService
 }
 
 func (r *RelationshipService) Create(ctx context.Context, rtshp model.Relationship) (model.Relationship, error) {
@@ -26,5 +28,12 @@ func (r *RelationshipService) Create(ctx context.Context, rtshp model.Relationsh
 		return model.Relationship{}, r.CommonService.BuildError(ctx, msgErr)
 	}
 
-	panic("not implemented")
+	rtshp, err = r.PersistenceDB.Record(ctx, rtshp)
+
+	if err != nil {
+		return model.Relationship{}, r.CommonService.BuildError(ctx, []string{err.Error()})
+	}
+
+	return rtshp, nil
+
 }

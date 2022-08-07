@@ -41,9 +41,7 @@ func TestPersonService_Record(t *testing.T) {
 	personExpected := personToRecord
 	personExpected.ID = "0509b0d9-72bb-4230-a9ad-7f763c0e0eb8"
 
-	commonService.EXPECT().GetUUID().Return(personExpected.ID)
-
-	persistenceDB.EXPECT().Insert(ctx, personExpected).Return(personExpected, nil)
+	persistenceDB.EXPECT().Insert(ctx, personToRecord).Return(personExpected, nil)
 
 	personRecorded, err := personService.Record(ctx, personToRecord)
 

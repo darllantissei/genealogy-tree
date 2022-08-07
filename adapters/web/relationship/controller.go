@@ -32,7 +32,7 @@ func (pw *RelationshipWeb) parseData(rtshpApp model.Relationship) RelationshipDT
 
 	for _, memberApp := range rtshpApp.Members {
 
-		rtshpDTO.Members = append(rtshpDTO.Members, RelationshipMember{
+		rtshpDTO.Members = append(rtshpDTO.Members, RelationshipMemberDTO{
 			PersonID:       memberApp.PersonID,
 			RelationshipID: memberApp.RelationshipID,
 			Type:           memberApp.Type,

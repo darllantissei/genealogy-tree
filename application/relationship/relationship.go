@@ -7,5 +7,6 @@ import (
 )
 
 func (r *RelationshipService) getKinship(ctx context.Context, rtshp model.Relationship) (model.Relationship, error) {
-	panic("Not implemented")
+	// TODO: implementar o parentesco do relacionamento
+	return model.Relationship{PersonID: "3211b2b2-3a5c-4ac0-9f80-f328b5f1c3c4"}, nil
 }

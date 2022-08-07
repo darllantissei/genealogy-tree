@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"reflect"
 
 	enumgender "github.com/darllantissei/genealogy-tree/application/enum/gender"
@@ -24,4 +25,8 @@ func (prsn *Person) IsEmpty() bool {
 	}
 
 	return false
+}
+
+func (prsn Person) FullName() string {
+	return fmt.Sprintf("%s %s", prsn.FirstName, prsn.LastName)
 }

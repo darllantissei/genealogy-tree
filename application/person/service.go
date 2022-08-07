@@ -33,8 +33,6 @@ func (p *PersonService) Record(ctx context.Context, prsn model.Person) (model.Pe
 
 	if strings.EqualFold(prsn.ID, "") {
 
-		prsn.ID = p.CommonService.GetUUID()
-
 		prsn, err = p.PersistenceDB.Insert(ctx, prsn)
 
 		if err != nil {

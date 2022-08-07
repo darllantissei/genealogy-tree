@@ -4,9 +4,13 @@ import (
 	"context"
 	"testing"
 
+	statusapplication "github.com/darllantissei/genealogy-tree/application/enum/status_application"
 	"github.com/darllantissei/genealogy-tree/application/model"
+	mock_common "github.com/darllantissei/genealogy-tree/mocks/common"
+	mock_person "github.com/darllantissei/genealogy-tree/mocks/person"
 	mockrelationship "github.com/darllantissei/genealogy-tree/mocks/relationship"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRelationshipService_Create(t *testing.T) {
@@ -19,8 +23,14 @@ func TestRelationshipService_Create(t *testing.T) {
 
 	persistenceDB := mockrelationship.NewMockIRelationshipPersistenceDB(ctrl)
 
+	personService := mock_person.NewMockIPersonService(ctrl)
+
+	commonService := mock_common.NewMockICommonService(ctrl)
+
 	relationshipService := RelationshipService{
 		PersistenceDB: persistenceDB,
+		PersonService: personService,
+		CommonService: commonService,
 	}
 
 	ctx := context.Background()
@@ -32,8 +42,14 @@ func TestRelationshipService_Create(t *testing.T) {
 		// Type:     relationship.Child,
 	}
 
+	personService.EXPECT().Fetch(ctx, model.Person{ID: mockRelationship.PersonID}).Return(model.Person{ID: mockRelationship.PersonID}, nil)
+
+	commonService.EXPECT().BuildError(ctx, []string{"The person must have one or more members", "Please, declare some relationship"}).Return(model.Returns{Return: model.Return{Status: statusapplication.Error, Message: []string{"The person must have one or more members", "Please, declare some relationship"}}})
+
 	relationship, err := relationshipService.Create(ctx, mockRelationship)
 
-	_, _ = relationship, err
+	require.NotNil(t, err, "Error occurred, the error must be returned")
+
+	require.Empty(t, relationship, "Error occurred, the struct must be empty")
 
 }

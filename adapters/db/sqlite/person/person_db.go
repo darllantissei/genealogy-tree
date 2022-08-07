@@ -22,9 +22,7 @@ func NewPersonDB(dbcommon commondb.CommonDB) *PersonDB {
 
 func (db *PersonDB) Insert(ctx context.Context, prsn model.Person) (model.Person, error) {
 
-	if strings.EqualFold(prsn.ID, "") {
-		return model.Person{}, errors.New("the ID of person undefined")
-	}
+	prsn.ID = db.commonDB.GetUUID()
 
 	fields := []interface{}{
 		prsn.ID,

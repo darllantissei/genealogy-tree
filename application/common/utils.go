@@ -3,8 +3,6 @@ package common
 import (
 	"fmt"
 	"reflect"
-
-	gouuid "github.com/satori/go.uuid"
 )
 
 func (c CommonService) SliceExists(slice interface{}, item interface{}) bool {
@@ -21,11 +19,4 @@ func (c CommonService) SliceExists(slice interface{}, item interface{}) bool {
 	}
 
 	return false
-}
-
-func (c CommonService) GetUUID() string {
-
-	uuid := gouuid.NewV4()
-
-	return uuid.String()
 }

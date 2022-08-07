@@ -53,6 +53,7 @@ func main() {
 	factoryRelationship := factoryrelationship.FactoryRelationship{
 		CommonDB:      *dbcommon.NewCommon(sourceDataBase),
 		CommonService: factoryCommonService.NewService(),
+		PersonService: factoryPerson.NewService(),
 	}
 
 	application := application.Application{

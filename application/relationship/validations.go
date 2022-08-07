@@ -3,11 +3,20 @@ package relationship
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strings"
 
+	"github.com/darllantissei/genealogy-tree/application/common"
 	"github.com/darllantissei/genealogy-tree/application/model"
 )
 
 func (r *RelationshipService) checkRelationship(ctx context.Context, rtshp model.Relationship) (msgErr []string) {
+
+	_, err := common.Validation(rtshp)
+
+	if err != nil {
+		msgErr = append(msgErr, strings.Split(err.Error(), ";")...)
+	}
 
 	if rtshp.IsEmpty() {
 		msgErr = append(msgErr, "Please, the relationship is required")
@@ -21,7 +30,7 @@ func (r *RelationshipService) checkRelationship(ctx context.Context, rtshp model
 		msgErr = append(msgErr, "Please, declare two or more relationship between the persons")
 	}
 
-	err := r.checkSamePerson(ctx, rtshp)
+	err = r.checkSamePerson(ctx, rtshp)
 
 	if err != nil {
 		msgErr = append(msgErr, err.Error())
@@ -32,6 +41,8 @@ func (r *RelationshipService) checkRelationship(ctx context.Context, rtshp model
 	if err != nil {
 		msgErr = append(msgErr, err.Error())
 	}
+
+	msgErr = append(msgErr, r.checkPersonExistis(ctx, rtshp)...)
 
 	return msgErr
 }
@@ -57,22 +68,70 @@ func (r *RelationshipService) relationshipUnallowed(ctx context.Context, rtshp m
 		return err
 	}
 
-	for _, checkMember := range rtshp.Members {
+	for _, memberRequest := range rtshp.Members {
 
-		rtshpDB, err := r.PersistenceDB.Get(ctx, model.Relationship{PersonID: checkMember.PersonID})
+		rtshpDB, err := r.PersistenceDB.Get(ctx, model.Relationship{PersonID: memberRequest.PersonID})
 
 		if err != nil {
 			return err
 		}
 
-		for _, kindship := range rtshpDB.Members {
+		for _, memberDB := range rtshpDB.Members {
 
-			if kindship.Type != checkMember.Type {
-				return errors.New("this kind of relationship unallowed")
+			if rtshp.PersonID == memberDB.PersonID && memberDB.Type != memberRequest.Type {
+				person, err := r.PersonService.Fetch(ctx, model.Person{ID: rtshpDB.PersonID})
+
+				if err != nil {
+					return fmt.Errorf("fail get person for information that relationship unallowed")
+				}
+
+				return fmt.Errorf("this kind of relationship unallowed, because this person is %s of %s-%s", memberDB.Type, person.ID, person.FullName())
 			}
-		}
 
+		}
 	}
 
 	return nil
+}
+
+func (r *RelationshipService) checkPersonExistis(ctx context.Context, rtshp model.Relationship) []string {
+
+	err := r.checkDependencyInjection(ctx)
+
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	getPerson := func(personID string) error {
+
+		person, err := r.PersonService.Fetch(ctx, model.Person{ID: personID})
+
+		if err != nil {
+			return err
+		}
+
+		if person.IsEmpty() {
+			return fmt.Errorf("the ID of person %s not exists", personID)
+		}
+
+		return nil
+	}
+
+	err = getPerson(rtshp.PersonID)
+
+	if err != nil {
+		return []string{err.Error()}
+	}
+
+	collectionErrors := []string{}
+	for _, member := range rtshp.Members {
+
+		err := getPerson(member.PersonID)
+
+		if err != nil {
+			collectionErrors = append(collectionErrors, err.Error())
+		}
+	}
+
+	return collectionErrors
 }

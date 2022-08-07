@@ -6,8 +6,8 @@ import (
 )
 
 type RelationshipMember struct {
-	PersonID       string
-	RelationshipID string
-	Type           enumrelationship.Relationship
-	Kindship       enumkinship.Kinship
+	PersonID       string                        `valid:"required~The member of relationship is required"`
+	RelationshipID string                        `valid:"-"`
+	Type           enumrelationship.Relationship `valid:"required~The type of relationship is required"`
+	Kindship       enumkinship.Kinship           `valid:"-"`
 }

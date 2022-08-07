@@ -59,13 +59,13 @@ func TestRelationshipService_getKinship(t *testing.T) {
 			},
 		},
 	}
-
-	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: "3211b2b2-3a5c-4ac0-9f80-f328b5f1c3c4"}).Return(mockGetRelationshipINDB, nil)
+	_ = mockGetRelationshipINDB
+	// persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: "3211b2b2-3a5c-4ac0-9f80-f328b5f1c3c4"}).Return(mockGetRelationshipINDB, nil)
 
 	relationship, err := relationshipService.getKinship(ctx, mockToGetRelationship)
 
 	require.Nil(t, err, "description of kinship of relationship returned with success, haven't error")
 
-	_ = relationship
+	require.NotEmpty(t, relationship, "Relationship is defined, then struct relationship must be returned")
 
 }

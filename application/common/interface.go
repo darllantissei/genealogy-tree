@@ -9,5 +9,4 @@ import (
 type ICommonService interface {
 	BuildError(ctx context.Context, msgErr []string) model.Returns
 	SliceExists(slice interface{}, item interface{}) bool
-	GetUUID() string
 }

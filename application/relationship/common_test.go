@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	mock_person "github.com/darllantissei/genealogy-tree/mocks/person"
 	mockrelationship "github.com/darllantissei/genealogy-tree/mocks/relationship"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -33,7 +34,10 @@ func TestPersonService_checkDependencyInjection(t *testing.T) {
 
 	persistenceDB := mockrelationship.NewMockIRelationshipPersistenceDB(ctrl)
 
+	personService := mock_person.NewMockIPersonService(ctrl)
+
 	relationshipService.PersistenceDB = persistenceDB
+	relationshipService.PersonService = personService
 
 	ctx = context.WithValue(ctx, contextKey("check_dependecy"), "check dependency injection from RelationshipService declared")
 
