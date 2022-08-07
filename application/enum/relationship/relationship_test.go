@@ -1,6 +1,9 @@
 package relationship
 
 import (
+	"bytes"
+	"encoding/xml"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -437,4 +440,108 @@ func TestRelationship_Scan(t *testing.T) {
 		require.NotNil(t, err, "Content parsed with error, the error must be not nil")
 
 	}
+}
+
+func TestRelationship_MarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		0,
+		`Undefined`,
+		`undefined`,
+		`UNDEFINED`,
+		"0",
+		1,
+		`Parent`,
+		`parent`,
+		`PARENT`,
+		"1",
+		2,
+		`Child`,
+		`child`,
+		`CHILD`,
+		`2`,
+		3,
+		`Spouse`,
+		`spouse`,
+		`SPOUSE`,
+		`3`,
+		4,
+		`Sibling`,
+		`sibling`,
+		`SIBLING`,
+		`4`,
+	}
+
+	var tpRelationship Relationship
+
+	for _, possibility := range possibilities {
+
+		valueStsApp, err := tpRelationship.tryParseValueToRelationship(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil when parse possibility to relationship")
+
+		expected := []byte(fmt.Sprintf(`<relationship>%s</relationship>`, valueStsApp))
+
+		contentOUT := new(bytes.Buffer)
+
+		err = valueStsApp.MarshalXML(xml.NewEncoder(contentOUT), xml.StartElement{Name: xml.Name{Space: "", Local: "relationship"}})
+
+		require.Nil(t, err, "Error must be returned nil when parsed relationship")
+
+		require.Equal(t, expected, contentOUT.Bytes(), "The parse XML must be equal expected")
+
+	}
+}
+
+func TestRelationship_UnmarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		0,
+		`Undefined`,
+		`undefined`,
+		`UNDEFINED`,
+		"0",
+		1,
+		`Parent`,
+		`parent`,
+		`PARENT`,
+		"1",
+		2,
+		`Child`,
+		`child`,
+		`CHILD`,
+		`2`,
+		3,
+		`Spouse`,
+		`spouse`,
+		`SPOUSE`,
+		`3`,
+		4,
+		`Sibling`,
+		`sibling`,
+		`SIBLING`,
+		`4`,
+	}
+
+	var tpRelationship Relationship
+
+	for _, possibility := range possibilities {
+
+		expectRelationship, err := tpRelationship.tryParseValueToRelationship(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil")
+
+		contentIN := []byte(`<Relationship>` + fmt.Sprint(possibility) + `</Relationship>`)
+
+		err = xml.Unmarshal(contentIN, &tpRelationship)
+
+		require.Nil(t, err, "Error must be returned nil when parsed relationship")
+
+		require.Equal(t, expectRelationship, tpRelationship, "The relationship parsed must be equal expected")
+	}
+
+	contentIN := []byte(`<Relationship></Relationship>`)
+
+	err := xml.Unmarshal(contentIN, &tpRelationship)
+
+	require.NotNil(t, err, "Error must be returned when parsed relationship empty")
+
 }

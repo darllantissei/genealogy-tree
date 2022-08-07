@@ -7,12 +7,16 @@ import (
 	"github.com/darllantissei/genealogy-tree/application/model"
 )
 
-func BuildError(ctx context.Context, msgErr []string) model.Returns {
+type CommonService struct{}
+
+func (c CommonService) BuildError(ctx context.Context, msgErr []string) model.Returns {
 
 	var ret model.Returns
 
-	ret.Status = statusapplication.Error
-	ret.Message = msgErr
+	ret.Return = model.Return{
+		Status:  statusapplication.Error,
+		Message: msgErr,
+	}
 
 	return ret
 }

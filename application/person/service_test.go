@@ -6,6 +6,7 @@ import (
 
 	"github.com/darllantissei/genealogy-tree/application/enum/gender"
 	"github.com/darllantissei/genealogy-tree/application/model"
+	mockcommon "github.com/darllantissei/genealogy-tree/mocks/common"
 	mockperson "github.com/darllantissei/genealogy-tree/mocks/person"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
@@ -22,9 +23,11 @@ func TestPersonService_Record(t *testing.T) {
 	ctx := context.Background()
 
 	persistenceDB := mockperson.NewMockIPersonPersistenceDB(ctrl)
+	commonService := mockcommon.NewMockICommonService(ctrl)
 
 	personService := PersonService{
 		PersistenceDB: persistenceDB,
+		CommonService: commonService,
 	}
 
 	ctx = context.WithValue(ctx, contextKey(testRecordPerson), "Record a person")
@@ -38,7 +41,9 @@ func TestPersonService_Record(t *testing.T) {
 	personExpected := personToRecord
 	personExpected.ID = "0509b0d9-72bb-4230-a9ad-7f763c0e0eb8"
 
-	persistenceDB.EXPECT().Insert(ctx, personToRecord).Return(personExpected, nil)
+	commonService.EXPECT().GetUUID().Return(personExpected.ID)
+
+	persistenceDB.EXPECT().Insert(ctx, personExpected).Return(personExpected, nil)
 
 	personRecorded, err := personService.Record(ctx, personToRecord)
 

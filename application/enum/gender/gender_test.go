@@ -1,6 +1,9 @@
 package gender
 
 import (
+	"bytes"
+	"encoding/xml"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -295,4 +298,87 @@ func TestGender_Scan(t *testing.T) {
 		require.NotNil(t, err, "Content parsed with error, the error must be not nil")
 
 	}
+}
+
+func TestGender_MarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		0,
+		`Undefined`,
+		`undefined`,
+		`UNDEFINED`,
+		`0`,
+		1,
+		`Masculine`,
+		`masculine`,
+		`MASCULINE`,
+		`1`,
+		2,
+		`Female`,
+		`female`,
+		`FEMALE`,
+		`2`,
+	}
+
+	var tpGender Gender
+
+	for _, possibility := range possibilities {
+
+		valueStsApp, err := tpGender.tryParseValueToGender(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil when parse possibility to gender")
+
+		expected := []byte(fmt.Sprintf(`<gender>%s</gender>`, valueStsApp))
+
+		contentOUT := new(bytes.Buffer)
+
+		err = valueStsApp.MarshalXML(xml.NewEncoder(contentOUT), xml.StartElement{Name: xml.Name{Space: "", Local: "gender"}})
+
+		require.Nil(t, err, "Error must be returned nil when parsed gender")
+
+		require.Equal(t, expected, contentOUT.Bytes(), "The parse XML must be equal expected")
+
+	}
+}
+
+func TestGender_UnmarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		0,
+		`Undefined`,
+		`undefined`,
+		`UNDEFINED`,
+		`0`,
+		1,
+		`Masculine`,
+		`masculine`,
+		`MASCULINE`,
+		`1`,
+		2,
+		`Female`,
+		`female`,
+		`FEMALE`,
+		`2`,
+	}
+
+	var tpGender Gender
+
+	for _, possibility := range possibilities {
+
+		expectGender, err := tpGender.tryParseValueToGender(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil")
+
+		contentIN := []byte(`<Gender>` + fmt.Sprint(possibility) + `</Gender>`)
+
+		err = xml.Unmarshal(contentIN, &tpGender)
+
+		require.Nil(t, err, "Error must be returned nil when parsed gender")
+
+		require.Equal(t, expectGender, tpGender, "The gender parsed must be equal expected")
+	}
+
+	contentIN := []byte(`<Gender></Gender>`)
+
+	err := xml.Unmarshal(contentIN, &tpGender)
+
+	require.NotNil(t, err, "Error must be returned when parsed gender empty")
 }

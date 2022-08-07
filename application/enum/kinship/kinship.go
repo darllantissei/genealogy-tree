@@ -2,6 +2,7 @@ package kinship
 
 import (
 	"database/sql/driver"
+	"encoding/xml"
 	"fmt"
 	"strconv"
 	"strings"
@@ -75,6 +76,31 @@ func (k Kinship) String() string {
 	default:
 		panic(fmt.Sprintf("type kinship is invalid. %s", typeAccepts()))
 	}
+
+}
+
+func (k Kinship) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(k.String(), start)
+}
+
+func (k *Kinship) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+
+	var (
+		valueContent string
+		knshp        Kinship
+	)
+
+	d.DecodeElement(&valueContent, &start)
+
+	knshp, err := k.tryParseValueToKinship(valueContent)
+
+	if err != nil {
+		return err
+	}
+
+	*k = Kinship(knshp)
+
+	return err
 
 }
 

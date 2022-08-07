@@ -3,7 +3,11 @@ Utilizar o framework de mock disponível em [gomock](https://github.com/golang/m
 Seguir as instruções disponíveis em [gomock-install](https://github.com/golang/mock#go-116) \
 Gerar mocks:
 ```bash
-GOPATH=$(go env GOPATH) ~/go/bin/mockgen -source=$(pwd)/<path_interface> -destination=$(pwd)/<path_mocks>
+GOPATH=$(go env GOPATH) ~/go/bin/mockgen -source=$(pwd)/<path_interface> -destination=$(pwd)/mocks/<path_mocks>
+```
+Ou poderá realizar a geração dos mocks a partir do comando
+```bash
+make generate-mocks
 ```
 
 ### Arquitetura utilizada no projeto - Hexagonal

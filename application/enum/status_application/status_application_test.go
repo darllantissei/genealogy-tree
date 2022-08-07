@@ -1,6 +1,9 @@
 package statusapplication
 
 import (
+	"bytes"
+	"encoding/xml"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -224,4 +227,82 @@ func TestStatusApp_Scan(t *testing.T) {
 		require.NotNil(t, err, "Content parsed with error, the error must be not nil")
 
 	}
+}
+
+func TestStatusApp_MarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		-1,
+		0,
+		"Error",
+		"error",
+		"ERROR",
+		"Ok",
+		"ok",
+		"OK",
+		"-1",
+		"0",
+		Error,
+		Ok,
+	}
+
+	var stsApp StatusApp
+
+	for _, possibility := range possibilities {
+
+		valueStsApp, err := stsApp.tryParseValueToStatusApp(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil when parse possibility to status application")
+
+		expected := []byte(fmt.Sprintf(`<status>%s</status>`, valueStsApp))
+
+		contentOUT := new(bytes.Buffer)
+
+		err = valueStsApp.MarshalXML(xml.NewEncoder(contentOUT), xml.StartElement{Name: xml.Name{Space: "", Local: "status"}})
+
+		require.Nil(t, err, "Error must be returned nil when parsed status application")
+
+		require.Equal(t, expected, contentOUT.Bytes(), "The parse XML must be equal expected")
+
+	}
+}
+
+func TestStatusApp_UnmarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		-1,
+		0,
+		"Error",
+		"error",
+		"ERROR",
+		"Ok",
+		"ok",
+		"OK",
+		"-1",
+		"0",
+		Error,
+		Ok,
+	}
+
+	var stsAppUnmarshalXML StatusApp
+
+	for _, possibility := range possibilities {
+
+		expectStatus, err := stsAppUnmarshalXML.tryParseValueToStatusApp(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil")
+
+		contentIN := []byte(`<StatusApp>` + fmt.Sprint(possibility) + `</StatusApp>`)
+
+		err = xml.Unmarshal(contentIN, &stsAppUnmarshalXML)
+
+		require.Nil(t, err, "Error must be returned nil when parsed status application")
+
+		require.Equal(t, expectStatus, stsAppUnmarshalXML, "The status parsed must be equal expected")
+	}
+
+	contentIN := []byte(`<StatusApp></StatusApp>`)
+
+	err := xml.Unmarshal(contentIN, &stsAppUnmarshalXML)
+
+	require.NotNil(t, err, "Error must be returned when parsed status application empty")
+
 }

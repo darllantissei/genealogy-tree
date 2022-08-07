@@ -2,6 +2,7 @@ package statusapplication
 
 import (
 	"database/sql/driver"
+	"encoding/xml"
 	"fmt"
 	"strconv"
 	"strings"
@@ -51,6 +52,31 @@ func (s StatusApp) String() string {
 	default:
 		panic(fmt.Sprintf("status app is invalid. %s", StatusAppAccepts()))
 	}
+}
+
+func (s StatusApp) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(s.String(), start)
+}
+
+func (s *StatusApp) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+
+	var (
+		valueContent string
+		stsApp       StatusApp
+	)
+
+	d.DecodeElement(&valueContent, &start)
+
+	stsApp, err := s.tryParseValueToStatusApp(valueContent)
+
+	if err != nil {
+		return err
+	}
+
+	*s = StatusApp(stsApp)
+
+	return err
+
 }
 
 func (s StatusApp) MarshalJSON() ([]byte, error) {

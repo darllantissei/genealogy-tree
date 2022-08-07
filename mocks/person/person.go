@@ -35,6 +35,21 @@ func (m *MockIPersonService) EXPECT() *MockIPersonServiceMockRecorder {
 	return m.recorder
 }
 
+// All mocks base method.
+func (m *MockIPersonService) All(ctx context.Context) ([]model.Person, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "All", ctx)
+	ret0, _ := ret[0].([]model.Person)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// All indicates an expected call of All.
+func (mr *MockIPersonServiceMockRecorder) All(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "All", reflect.TypeOf((*MockIPersonService)(nil).All), ctx)
+}
+
 // Fetch mocks base method.
 func (m *MockIPersonService) Fetch(ctx context.Context, prsn model.Person) (model.Person, error) {
 	m.ctrl.T.Helper()
@@ -155,6 +170,21 @@ func (mr *MockIPersonReadDBMockRecorder) Get(ctx, prsn interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockIPersonReadDB)(nil).Get), ctx, prsn)
 }
 
+// List mocks base method.
+func (m *MockIPersonReadDB) List(ctx context.Context) ([]model.Person, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx)
+	ret0, _ := ret[0].([]model.Person)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockIPersonReadDBMockRecorder) List(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIPersonReadDB)(nil).List), ctx)
+}
+
 // MockIPersonPersistenceDB is a mock of IPersonPersistenceDB interface.
 type MockIPersonPersistenceDB struct {
 	ctrl     *gomock.Controller
@@ -206,6 +236,21 @@ func (m *MockIPersonPersistenceDB) Insert(ctx context.Context, prsn model.Person
 func (mr *MockIPersonPersistenceDBMockRecorder) Insert(ctx, prsn interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockIPersonPersistenceDB)(nil).Insert), ctx, prsn)
+}
+
+// List mocks base method.
+func (m *MockIPersonPersistenceDB) List(ctx context.Context) ([]model.Person, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "List", ctx)
+	ret0, _ := ret[0].([]model.Person)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// List indicates an expected call of List.
+func (mr *MockIPersonPersistenceDBMockRecorder) List(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockIPersonPersistenceDB)(nil).List), ctx)
 }
 
 // Update mocks base method.

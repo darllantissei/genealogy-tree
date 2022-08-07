@@ -2,6 +2,7 @@ package gender
 
 import (
 	"database/sql/driver"
+	"encoding/xml"
 	"fmt"
 	"strconv"
 	"strings"
@@ -57,6 +58,31 @@ func (g Gender) String() string {
 	default:
 		panic(fmt.Sprintf("type gender is invalid. %s", typeAccepts()))
 	}
+}
+
+func (g Gender) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(g.String(), start)
+}
+
+func (g *Gender) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+
+	var (
+		valueContent string
+		gndr         Gender
+	)
+
+	d.DecodeElement(&valueContent, &start)
+
+	gndr, err := g.tryParseValueToGender(valueContent)
+
+	if err != nil {
+		return err
+	}
+
+	*g = Gender(gndr)
+
+	return err
+
 }
 
 func (g Gender) MarshalJSON() ([]byte, error) {

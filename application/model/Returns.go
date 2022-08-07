@@ -7,12 +7,13 @@ import (
 )
 
 type Returns struct {
-	Return `json:"return" valid:"-"`
+	XMLName struct{} `json:"-" xml:"return"`
+	Return  `json:"return" xml:"return" valid:"-"`
 }
 
 type Return struct {
-	Status  enumstatusapp.StatusApp `json:"status" valid:"-"`
-	Message []string `json:"message,omitempty" valid:"-"`
+	Status  enumstatusapp.StatusApp `json:"status" xml:"status" valid:"-"`
+	Message []string                `json:"message,omitempty" xml:"message,omitempty" valid:"-"`
 }
 
 func (r Returns) Error() string {

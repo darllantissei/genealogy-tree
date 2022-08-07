@@ -1,6 +1,9 @@
 package kinship
 
 import (
+	"bytes"
+	"encoding/xml"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -508,4 +511,117 @@ func TestKinship_Scan(t *testing.T) {
 		require.NotNil(t, err, "Content parsed with error, the error must be not nil")
 
 	}
+}
+
+func TestKinship_MarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		0,
+		`Undefined`,
+		`undefined`,
+		`UNDEFINED`,
+		`0`,
+		1,
+		`Parent`,
+		`parent`,
+		`PARENT`,
+		`1`,
+		2,
+		`Child`,
+		`child`,
+		`CHILD`,
+		`2`,
+		3,
+		`Spouse`,
+		`spouse`,
+		`SPOUSE`,
+		`3`,
+		4,
+		`Sibling`,
+		`sibling`,
+		`SIBLING`,
+		`4`,
+		5,
+		`Cousins`,
+		`cousins`,
+		`COUSINS`,
+		`5`,
+	}
+
+	var tpKinship Kinship
+
+	for _, possibility := range possibilities {
+
+		valueStsApp, err := tpKinship.tryParseValueToKinship(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil when parse possibility to kinship")
+
+		expected := []byte(fmt.Sprintf(`<kinship>%s</kinship>`, valueStsApp))
+
+		contentOUT := new(bytes.Buffer)
+
+		err = valueStsApp.MarshalXML(xml.NewEncoder(contentOUT), xml.StartElement{Name: xml.Name{Space: "", Local: "kinship"}})
+
+		require.Nil(t, err, "Error must be returned nil when parsed kinship")
+
+		require.Equal(t, expected, contentOUT.Bytes(), "The parse XML must be equal expected")
+
+	}
+}
+
+func TestKinship_UnmarshalXML(t *testing.T) {
+	possibilities := []interface{}{
+		0,
+		`Undefined`,
+		`undefined`,
+		`UNDEFINED`,
+		`0`,
+		1,
+		`Parent`,
+		`parent`,
+		`PARENT`,
+		`1`,
+		2,
+		`Child`,
+		`child`,
+		`CHILD`,
+		`2`,
+		3,
+		`Spouse`,
+		`spouse`,
+		`SPOUSE`,
+		`3`,
+		4,
+		`Sibling`,
+		`sibling`,
+		`SIBLING`,
+		`4`,
+		5,
+		`Cousins`,
+		`cousins`,
+		`COUSINS`,
+		`5`,
+	}
+
+	var tpKinship Kinship
+
+	for _, possibility := range possibilities {
+
+		expectKinship, err := tpKinship.tryParseValueToKinship(fmt.Sprint(possibility))
+
+		require.Nil(t, err, "Error must be nil")
+
+		contentIN := []byte(`<Kinship>` + fmt.Sprint(possibility) + `</Kinship>`)
+
+		err = xml.Unmarshal(contentIN, &tpKinship)
+
+		require.Nil(t, err, "Error must be returned nil when parsed kinship")
+
+		require.Equal(t, expectKinship, tpKinship, "The kinship parsed must be equal expected")
+	}
+
+	contentIN := []byte(`<Kinship></Kinship>`)
+
+	err := xml.Unmarshal(contentIN, &tpKinship)
+
+	require.NotNil(t, err, "Error must be returned when parsed kinship empty")
 }

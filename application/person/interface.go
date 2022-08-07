@@ -9,6 +9,7 @@ import (
 type IPersonService interface {
 	Record(ctx context.Context, prsn model.Person) (model.Person, error)
 	Fetch(ctx context.Context, prsn model.Person) (model.Person, error)
+	All(ctx context.Context) ([]model.Person, error)
 }
 
 type IPersonWriteDB interface {
@@ -18,6 +19,7 @@ type IPersonWriteDB interface {
 
 type IPersonReadDB interface {
 	Get(ctx context.Context, prsn model.Person) (model.Person, error)
+	List(ctx context.Context) ([]model.Person, error)
 }
 
 type IPersonPersistenceDB interface {

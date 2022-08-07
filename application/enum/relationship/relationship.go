@@ -2,6 +2,7 @@ package relationship
 
 import (
 	"database/sql/driver"
+	"encoding/xml"
 	"fmt"
 	"strconv"
 	"strings"
@@ -43,9 +44,9 @@ var (
 	}
 
 	typeAccepts = func() string {
-		
+
 		descriptionTypeAccepts := "Types accepts: "
-		
+
 		for enum, types := range relationship_name {
 			descriptionTypeAccepts += fmt.Sprintf("%d ou %s | ", enum, types)
 		}
@@ -69,6 +70,31 @@ func (r Relationship) String() string {
 	default:
 		panic(fmt.Sprintf("type relationship is invalid. %s", typeAccepts()))
 	}
+
+}
+
+func (r Relationship) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	return e.EncodeElement(r.String(), start)
+}
+
+func (r *Relationship) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+
+	var (
+		valueContent string
+		rtshp        Relationship
+	)
+
+	d.DecodeElement(&valueContent, &start)
+
+	rtshp, err := r.tryParseValueToRelationship(valueContent)
+
+	if err != nil {
+		return err
+	}
+
+	*r = Relationship(rtshp)
+
+	return err
 
 }
 
