@@ -3,11 +3,10 @@ package common
 import (
 	"database/sql"
 	"errors"
-	"strings"
 	"sync"
 
-	log "github.com/sirupsen/logrus"
 	gouuid "github.com/satori/go.uuid"
+	log "github.com/sirupsen/logrus"
 )
 
 type CommonDB struct {
@@ -62,11 +61,7 @@ func (c *CommonDB) connect() {
 
 	if c.db == nil {
 
-		if strings.EqualFold(c.sourceDB, "") {
-			c.db, err = sql.Open("sqlite3", ":memory")
-		} else {
-			c.db, err = sql.Open("sqlite3", c.sourceDB)
-		}
+		c.db, err = sql.Open("sqlite3", c.sourceDB)
 
 		if err != nil {
 			panic("impossible establish connection with DB sqlite")

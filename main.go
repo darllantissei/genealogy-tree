@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"strconv"
 	"strings"
 
@@ -41,7 +42,12 @@ func main() {
 	serviceType := getServiceType()
 	inDebugMode := getInDebugMode()
 
-	sourceDataBase := "./genealogy-tree.sqlite"
+	// sourceDataBase := "./database/genealogy-tree.sqlite"
+	sourceDataBase := os.Getenv("DATA_SOURCE_APP")
+
+	if strings.EqualFold(sourceDataBase, "") {
+		sourceDataBase = "database/genealogy-tree.sqlite"
+	}
 
 	factoryCommonService := factorycommonservice.FactoryCommonService{}
 

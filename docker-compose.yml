@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  app-genealogy-tree:
+    build:
+      context: .
+      args:
+        APP_NAME: genealogy-tree-app
+        APP_PORT: "9000"
+        APP_SERVICE_MODE: "http"
+        APP_DEBUG: "true"
+        RELATIVE_PATH: src/github.com/darllantissei
+        DATA_SOURCE: database/genealogy-tree.sqlite
+    restart: always
+    deploy:
+      replicas: 1      
+    container_name: "go-app-genealogy-tree"
+    hostname: "app-genealogy-tree"
+    ports:
+      - 9000:9000
+    networks:
+      - app-backend
+    volumes:
+      - ./database:/go/src/github.com/darllantissei/genealogy-tree-app/database
+
+networks:
+  app-backend:
+    external: true

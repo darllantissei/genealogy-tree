@@ -15,3 +15,11 @@ generate-mocks:
 		echo mock gerado ;\
 		echo $$destinyOfMock ;\
 	done;
+
+deploy-app:
+	@docker network inspect app-backend >/dev/null 2>&1 || docker network create app-backend
+	@docker-compose build --no-cache && docker-compose down -v --remove-orphans && docker-compose up -d --force-recreate
+	@docker-compose logs
+
+reset-database:
+	@rm -rf database/genealogy-tree.sqlite && sqlite3 database/genealogy-tree.sqlite < sql/schema.sql
