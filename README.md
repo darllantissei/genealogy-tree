@@ -1,5 +1,5 @@
 # genealogy-tree
-Aplicação responsável por gerar árvore genealócia de uma pessoa
+Aplicação responsável por gerar árvore genealógica de uma pessoa
 
 ### Tecnologias
  * [linguem de programação] [Golang versão 1.19](https://go.dev/)
