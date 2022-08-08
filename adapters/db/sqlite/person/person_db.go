@@ -49,7 +49,7 @@ func (db *PersonDB) Insert(ctx context.Context, prsn model.Person) (model.Person
 	}
 
 	if row <= 0 {
-		return model.Person{}, errors.New("the data of person didn't persisted")
+		return model.Person{}, errors.New("the data of person wasn't persisted")
 	}
 
 	return prsn, nil

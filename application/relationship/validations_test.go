@@ -198,3 +198,42 @@ func TestRelationshipService_checkPersonExistis(t *testing.T) {
 	require.Empty(t, msgErr, "The person exist, then list error will return empty")
 
 }
+
+func TestRelationshipService_checkRelationshipExists(t *testing.T) {
+
+	const testRelationshipAlreadExists = "test_relationship_already_exists"
+
+	ctrl := gomock.NewController(t)
+
+	defer ctrl.Finish()
+
+	persistenceDB := mockrelationship.NewMockIRelationshipPersistenceDB(ctrl)
+
+	personService := mockperson.NewMockIPersonService(ctrl)
+
+	relationshipService := RelationshipService{
+		PersistenceDB: persistenceDB,
+		PersonService: personService,
+	}
+
+	ctx := context.Background()
+
+	ctx = context.WithValue(ctx, contextKey(testRelationshipAlreadExists), "check relationship already exists - relationship not exists")
+
+	mockPersonID := "23lk4j3lk4j23"
+
+	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: mockPersonID}).Return(model.Relationship{}, nil)
+
+	err := relationshipService.checkRelationshipExists(ctx, model.Relationship{PersonID: mockPersonID})
+
+	require.Nil(t, err, "Relationship not exists, then error must be nil")
+
+	ctx = context.WithValue(ctx, contextKey(testRelationshipAlreadExists), "check relationship already exist - relationship exists")
+
+	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: mockPersonID}).Return(model.Relationship{PersonID: mockPersonID, Members: []model.RelationshipMember{{PersonID: "34kl5j34lkj"}}}, nil)
+
+	err = relationshipService.checkRelationshipExists(ctx, model.Relationship{PersonID: mockPersonID})
+
+	require.NotNil(t, err, "The relationship exists, then error must be returned")
+
+}

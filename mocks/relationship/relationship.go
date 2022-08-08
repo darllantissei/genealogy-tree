@@ -126,6 +126,21 @@ func (mr *MockIRelationshipReadDBMockRecorder) Get(ctx, rtshp interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockIRelationshipReadDB)(nil).Get), ctx, rtshp)
 }
 
+// GetKinship mocks base method.
+func (m *MockIRelationshipReadDB) GetKinship(ctx context.Context, member model.RelationshipMember) ([]model.RelationshipMember, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKinship", ctx, member)
+	ret0, _ := ret[0].([]model.RelationshipMember)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKinship indicates an expected call of GetKinship.
+func (mr *MockIRelationshipReadDBMockRecorder) GetKinship(ctx, member interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKinship", reflect.TypeOf((*MockIRelationshipReadDB)(nil).GetKinship), ctx, member)
+}
+
 // MockIRelationshipPersistenceDB is a mock of IRelationshipPersistenceDB interface.
 type MockIRelationshipPersistenceDB struct {
 	ctrl     *gomock.Controller
@@ -162,6 +177,21 @@ func (m *MockIRelationshipPersistenceDB) Get(ctx context.Context, rtshp model.Re
 func (mr *MockIRelationshipPersistenceDBMockRecorder) Get(ctx, rtshp interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockIRelationshipPersistenceDB)(nil).Get), ctx, rtshp)
+}
+
+// GetKinship mocks base method.
+func (m *MockIRelationshipPersistenceDB) GetKinship(ctx context.Context, member model.RelationshipMember) ([]model.RelationshipMember, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKinship", ctx, member)
+	ret0, _ := ret[0].([]model.RelationshipMember)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKinship indicates an expected call of GetKinship.
+func (mr *MockIRelationshipPersistenceDBMockRecorder) GetKinship(ctx, member interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKinship", reflect.TypeOf((*MockIRelationshipPersistenceDB)(nil).GetKinship), ctx, member)
 }
 
 // Record mocks base method.

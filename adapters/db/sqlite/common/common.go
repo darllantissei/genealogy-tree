@@ -28,6 +28,11 @@ func (c *CommonDB) GetUUID() string {
 	return uuid.String()
 }
 
+func (c *CommonDB) TreatErrorDB(err error) error {
+	return err
+
+}
+
 func (c *CommonDB) TreatError(err error, messageNewError string) error {
 
 	log.WithFields(log.Fields{

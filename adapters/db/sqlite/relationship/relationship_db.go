@@ -78,6 +78,8 @@ func (db *RelationshipDB) Get(ctx context.Context, rtshp model.Relationship) (mo
 
 		query += ` AND relationship.person_id = ? `
 
+		query += ` AND relationship.relationship_id IS NULL `
+
 		args = append(args, rtshp.PersonID)
 	}
 
@@ -252,4 +254,56 @@ func (db *RelationshipDB) delete(ctx context.Context, rtshp model.Relationship) 
 	}
 
 	return nil
+}
+
+func (db *RelationshipDB) GetKinship(ctx context.Context, member model.RelationshipMember) ([]model.RelationshipMember, error) {
+	query := dqlSelectKinship
+
+	args := []interface{}{}
+
+	if !strings.EqualFold(member.PersonID, "") {
+
+		query += ` AND relationship_member.person_id = ? `
+
+		args = append(args, member.PersonID)
+	}
+
+	if len(args) <= 0 {
+		query += ` AND FALSE `
+	}
+
+	rows, err := db.commonDB.Query(query, args...)
+
+	if err != nil {
+
+		err = db.commonDB.TreatError(err, "Fail to get member relationship in database")
+
+		return []model.RelationshipMember{}, err
+	}
+
+	defer rows.Close()
+
+	member = model.RelationshipMember{}
+
+	members := []model.RelationshipMember{}
+
+	for rows.Next() {
+
+		err := rows.Scan(
+			&member.PersonID,
+			&member.Type,
+			&member.RelationshipID,
+		)
+
+		if err != nil {
+
+			err = db.commonDB.TreatError(err, "Fail to mapping fields in the struct member relationship")
+
+			return []model.RelationshipMember{}, err
+		}
+
+		members = append(members, member)
+	}
+
+	return members, nil
 }

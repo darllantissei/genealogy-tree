@@ -23,3 +23,6 @@ deploy-app:
 
 reset-database:
 	@rm -rf database/genealogy-tree.sqlite && sqlite3 database/genealogy-tree.sqlite < sql/schema.sql
+
+reset-database-dev:
+	@rm -rf genealogy-tree.sqlite && sqlite3 genealogy-tree.sqlite < sql/schema.sql

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/darllantissei/genealogy-tree/application/common"
+	"github.com/darllantissei/genealogy-tree/application/enum/relationship"
 	"github.com/darllantissei/genealogy-tree/application/model"
 )
 
@@ -22,12 +23,8 @@ func (r *RelationshipService) checkRelationship(ctx context.Context, rtshp model
 		msgErr = append(msgErr, "Please, the relationship is required")
 	}
 
-	if len(rtshp.Members) <= 0 {
+	if len(rtshp.Members) < 1 {
 		msgErr = append(msgErr, "Please, declare some relationship")
-	}
-
-	if len(rtshp.Members) == 1 {
-		msgErr = append(msgErr, "Please, declare two or more relationship between the persons")
 	}
 
 	err = r.checkSamePerson(ctx, rtshp)
@@ -70,22 +67,26 @@ func (r *RelationshipService) relationshipUnallowed(ctx context.Context, rtshp m
 
 	for _, memberRequest := range rtshp.Members {
 
-		rtshpDB, err := r.PersistenceDB.Get(ctx, model.Relationship{PersonID: memberRequest.PersonID})
+		membersDB, err := r.PersistenceDB.GetKinship(ctx, model.RelationshipMember{PersonID: memberRequest.PersonID})
 
 		if err != nil {
 			return err
 		}
 
-		for _, memberDB := range rtshpDB.Members {
+	checkMember:
+		for _, memberDB := range membersDB {
 
-			if rtshp.PersonID == memberDB.PersonID && memberDB.Type != memberRequest.Type {
-				person, err := r.PersonService.Fetch(ctx, model.Person{ID: rtshpDB.PersonID})
+			switch {
+			case memberDB.Type == relationship.Parent && memberRequest.Type == relationship.Spouse:
+				continue checkMember
+			case memberDB.Type == relationship.Sibling && memberRequest.Type == relationship.Child:
+				continue checkMember
+			case memberDB.Type == relationship.Child && memberRequest.Type == relationship.Child:
+				continue checkMember
+			default:
 
-				if err != nil {
-					return fmt.Errorf("fail get person for information that relationship unallowed")
-				}
+				return fmt.Errorf("invalid relationship")
 
-				return fmt.Errorf("this kind of relationship unallowed, because this person is %s of %s-%s", memberDB.Type, person.ID, person.FullName())
 			}
 
 		}
@@ -134,4 +135,26 @@ func (r *RelationshipService) checkPersonExistis(ctx context.Context, rtshp mode
 	}
 
 	return collectionErrors
+}
+
+func (r *RelationshipService) checkRelationshipExists(ctx context.Context, rtshp model.Relationship) error {
+
+	err := r.checkDependencyInjection(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	rtshpDB, err := r.PersistenceDB.Get(ctx, model.Relationship{PersonID: rtshp.PersonID})
+
+	if err != nil {
+		return fmt.Errorf("fail to check relationship exists. Details: %s", err.Error())
+	}
+
+	if !rtshpDB.IsEmpty() && len(rtshpDB.Members) > 0 {
+		return fmt.Errorf("this relationship already exists")
+	}
+
+	return nil
+
 }

@@ -16,6 +16,7 @@ type IRelationshipWriteDB interface {
 
 type IRelationshipReadDB interface {
 	Get(ctx context.Context, rtshp model.Relationship) (model.Relationship, error)
+	GetKinship(ctx context.Context, member model.RelationshipMember) ([]model.RelationshipMember, error)
 }
 
 type IRelationshipPersistenceDB interface {
