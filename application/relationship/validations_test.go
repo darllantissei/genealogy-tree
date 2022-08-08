@@ -102,10 +102,8 @@ func TestRelationshipService_relationshipUnallowed(t *testing.T) {
 		},
 	}
 
-	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca"}).
-		Return(model.Relationship{PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca", Members: []model.RelationshipMember{{PersonID: "2910f588-9189-4f45-929b-3c3883326e2e", Type: relationship.Sibling}}}, nil).AnyTimes()
-
-	personService.EXPECT().Fetch(ctx, model.Person{ID: "aa0063dc-734b-4215-8d34-a65a598b1dca"}).Return(model.Person{ID: "aa0063dc-734b-4215-8d34-a65a598b1dca", FirstName: "Eita", LastName: "Em cima de eita"}, nil).AnyTimes()
+	persistenceDB.EXPECT().GetKinship(ctx, model.RelationshipMember{PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca"}).
+		Return([]model.RelationshipMember{{PersonID: mockRelationship.PersonID, Type: relationship.Sibling}}, nil).AnyTimes()
 
 	err := relationshipService.relationshipUnallowed(ctx, mockRelationship)
 
@@ -128,17 +126,14 @@ func TestRelationshipService_relationshipUnallowed(t *testing.T) {
 
 	ctx = context.WithValue(ctx, contextKey(testRelationshipUnallowed), "Unallowed incest between sibling from same parent")
 
-	mockRelationshipINDB := model.Relationship{
-		PersonID: "5537b45d-81de-44b9-9221-00b7ebdbb7bf",
-		Members: []model.RelationshipMember{
-			{
-				PersonID: "66c7c0f4-bf70-4afb-a099-d7d66df02fda",
-				Type:     relationship.Child,
-			},
-			{
-				PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e",
-				Type:     relationship.Child,
-			},
+	mockRelationshipINDB := []model.RelationshipMember{
+		{
+			PersonID: "66c7c0f4-bf70-4afb-a099-d7d66df02fda",
+			Type:     relationship.Child,
+		},
+		{
+			PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e",
+			Type:     relationship.Child,
 		},
 	}
 
@@ -152,9 +147,7 @@ func TestRelationshipService_relationshipUnallowed(t *testing.T) {
 		},
 	}
 
-	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e"}).Return(mockRelationshipINDB, nil)
-
-	personService.EXPECT().Fetch(ctx, model.Person{ID: "5537b45d-81de-44b9-9221-00b7ebdbb7bf"}).Return(model.Person{ID: "5537b45d-81de-44b9-9221-00b7ebdbb7bf", FirstName: "Olha", LastName: "A bagunça"}, nil)
+	persistenceDB.EXPECT().GetKinship(ctx, model.RelationshipMember{PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e"}).Return(mockRelationshipINDB, nil)
 
 	err = relationshipService.relationshipUnallowed(ctx, mockRelationship)
 

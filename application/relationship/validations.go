@@ -83,6 +83,8 @@ func (r *RelationshipService) relationshipUnallowed(ctx context.Context, rtshp m
 				continue checkMember
 			case memberDB.Type == relationship.Child && memberRequest.Type == relationship.Child:
 				continue checkMember
+			case memberDB.Type == relationship.Sibling && memberRequest.Type == relationship.Sibling:
+				continue checkMember
 			default:
 
 				return fmt.Errorf("invalid relationship")

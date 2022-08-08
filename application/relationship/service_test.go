@@ -44,6 +44,8 @@ func TestRelationshipService_Create(t *testing.T) {
 
 	personService.EXPECT().Fetch(ctx, model.Person{ID: mockRelationship.PersonID}).Return(model.Person{ID: mockRelationship.PersonID}, nil)
 
+	persistenceDB.EXPECT().Get(ctx, model.Relationship{PersonID: mockRelationship.PersonID}).Return(mockRelationship, nil)
+
 	commonService.EXPECT().BuildError(ctx, []string{"The person must have one or more members", "Please, declare some relationship"}).Return(model.Returns{Return: model.Return{Status: statusapplication.Error, Message: []string{"The person must have one or more members", "Please, declare some relationship"}}})
 
 	relationship, err := relationshipService.Create(ctx, mockRelationship)
