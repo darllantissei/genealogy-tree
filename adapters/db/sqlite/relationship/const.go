@@ -30,12 +30,20 @@ WHERE id = ?
 `
 
 const dqlSelectKinship = `
-SELECT 
-	COALESCE(relationship_main.person_id, '') AS person_id,
-    COALESCE(relationship_main.type, relationship_member.type, 'undefined') AS "type", 
-	COALESCE(relationship_member.relationship_id, '') AS relationship_id
-FROM relationship AS relationship_main
-INNER JOIN relationship relationship_member 
-ON relationship_member.relationship_id = relationship_main.id
-WHERE TRUE
+SELECT
+    COALESCE(members.person_id, '') AS person_id,
+    COALESCE(members.type, 'undefined') AS "type",
+    COALESCE(members.relationship_id, '') AS relationship_id
+FROM
+    relationship AS members
+WHERE
+    members.relationship_id IN (
+        SELECT
+            rtshp.relationship_id
+        FROM
+            relationship AS rtshp
+            INNER JOIN relationship AS main ON main.id = rtshp.relationship_id
+        WHERE
+            rtshp.person_id = ?
+    )
 `

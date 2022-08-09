@@ -43,3 +43,8 @@ func (r *RelationshipService) Create(ctx context.Context, rtshp model.Relationsh
 	return rtshp, nil
 
 }
+
+func (r *RelationshipService) Fetch(ctx context.Context, rtshp model.Relationship) (model.Relationship, error) {
+
+	return r.PersistenceDB.Get(ctx, rtshp)
+}

@@ -3,9 +3,11 @@ package relationshipweb
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	commonweb "github.com/darllantissei/genealogy-tree/adapters/web/common"
 	"github.com/darllantissei/genealogy-tree/application"
+	"github.com/darllantissei/genealogy-tree/application/model"
 	"github.com/labstack/echo"
 )
 
@@ -53,4 +55,29 @@ func (rw *RelationshipWeb) CreateHandler(ectx echo.Context) error {
 	}
 
 	return rw.CommonWeb.ParseResponse(ectx, http.StatusCreated, rw.parseData(relationshipCreated))
+}
+
+func (pw *RelationshipWeb) GetHandler(ectx echo.Context) error {
+
+	personID := ectx.Param("person_id")
+
+	if strings.EqualFold(personID, "") {
+		respError := pw.ApplicationService.CommonService.BuildError(ectx.Request().Context(), []string{"the ID of person is empty, impossible to fetch relationship"})
+		return pw.CommonWeb.ParseResponse(ectx, http.StatusBadRequest, respError)
+	}
+
+	ctx := ectx.Request().Context()
+
+	relationshipFetched, err := pw.ApplicationService.RelationshipService.Fetch(ctx, model.Relationship{PersonID: personID})
+
+	if err != nil {
+		return pw.CommonWeb.ParseResponse(ectx, http.StatusBadRequest, err)
+	}
+
+	if relationshipFetched.IsEmpty() {
+		respErrNotFound := pw.ApplicationService.CommonService.BuildError(ectx.Request().Context(), []string{"The relationship of person not found"})
+		return pw.CommonWeb.ParseResponse(ectx, http.StatusNotFound, respErrNotFound)
+	}
+
+	return pw.CommonWeb.ParseResponse(ectx, http.StatusOK, pw.parseData(relationshipFetched))
 }

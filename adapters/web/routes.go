@@ -45,4 +45,6 @@ func (ws *WebServer) relationshipRoutes(route *echo.Group) {
 	relationshipGroup := route.Group("/relationship")
 
 	relationshipGroup.POST("", relationshipWeb.CreateHandler)
+
+	relationshipGroup.GET("/:person_id", relationshipWeb.GetHandler)
 }

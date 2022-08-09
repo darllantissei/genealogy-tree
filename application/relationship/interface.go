@@ -8,6 +8,7 @@ import (
 
 type IRelationshipService interface {
 	Create(ctx context.Context, rtshp model.Relationship) (model.Relationship, error)
+	Fetch(ctx context.Context, rtshp model.Relationship) (model.Relationship, error)
 }
 
 type IRelationshipWriteDB interface {

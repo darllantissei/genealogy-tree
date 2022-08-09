@@ -2,3 +2,4 @@ __debug_bin
 *.sqlite
 /.vscode/*.log
 !/database/genealogy-tree.sqlite
+query-test.sql

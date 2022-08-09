@@ -65,26 +65,39 @@ func (r *RelationshipService) relationshipUnallowed(ctx context.Context, rtshp m
 		return err
 	}
 
+	membersDB, err := r.PersistenceDB.GetKinship(ctx, model.RelationshipMember{PersonID: rtshp.PersonID})
+
+	if err != nil {
+		return err
+	}
+
+nextMemberRequest:
 	for _, memberRequest := range rtshp.Members {
-
-		membersDB, err := r.PersistenceDB.GetKinship(ctx, model.RelationshipMember{PersonID: memberRequest.PersonID})
-
-		if err != nil {
-			return err
-		}
 
 	checkMember:
 		for _, memberDB := range membersDB {
 
+			if strings.EqualFold(memberDB.PersonID, rtshp.PersonID) {
+				continue checkMember
+			}
+
+			if !strings.EqualFold(memberDB.PersonID, memberRequest.PersonID) {
+				continue checkMember
+			}
+
 			switch {
 			case memberDB.Type == relationship.Parent && memberRequest.Type == relationship.Spouse:
-				continue checkMember
+				continue nextMemberRequest
 			case memberDB.Type == relationship.Sibling && memberRequest.Type == relationship.Child:
-				continue checkMember
+				continue nextMemberRequest
 			case memberDB.Type == relationship.Child && memberRequest.Type == relationship.Child:
-				continue checkMember
+				continue nextMemberRequest
 			case memberDB.Type == relationship.Sibling && memberRequest.Type == relationship.Sibling:
-				continue checkMember
+				continue nextMemberRequest
+			case memberDB.Type == relationship.Spouse && memberRequest.Type == relationship.Parent:
+				continue nextMemberRequest
+			case memberDB.Type == relationship.Child && memberRequest.Type == relationship.Sibling:
+				continue nextMemberRequest
 			default:
 
 				return fmt.Errorf("invalid relationship")

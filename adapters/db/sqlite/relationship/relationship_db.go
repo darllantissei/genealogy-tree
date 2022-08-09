@@ -263,8 +263,6 @@ func (db *RelationshipDB) GetKinship(ctx context.Context, member model.Relations
 
 	if !strings.EqualFold(member.PersonID, "") {
 
-		query += ` AND relationship_member.person_id = ? `
-
 		args = append(args, member.PersonID)
 	}
 

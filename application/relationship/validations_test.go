@@ -92,66 +92,104 @@ func TestRelationshipService_relationshipUnallowed(t *testing.T) {
 		PersonService: personService,
 	}
 
-	mockRelationship := model.Relationship{
-		PersonID: "2910f588-9189-4f45-929b-3c3883326e2e",
+	mockRelationshipA := model.Relationship{
+		ID:       "101",
+		PersonID: "1",
 		Members: []model.RelationshipMember{
 			{
-				PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca",
-				Type:     relationship.Spouse,
+				PersonID:       "2",
+				RelationshipID: "101",
+				Type:           relationship.Spouse,
 			},
 		},
 	}
 
-	persistenceDB.EXPECT().GetKinship(ctx, model.RelationshipMember{PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca"}).
-		Return([]model.RelationshipMember{{PersonID: mockRelationship.PersonID, Type: relationship.Sibling}}, nil).AnyTimes()
-
-	err := relationshipService.relationshipUnallowed(ctx, mockRelationship)
-
-	require.NotNil(t, err, "Occurred a relationship unallowed, then the error will returned")
-
-	mockRelationship = model.Relationship{
-		ID:       "",
-		PersonID: "2910f588-9189-4f45-929b-3c3883326e2e",
+	mockRelationshipB := model.Relationship{
+		ID:       "201",
+		PersonID: "6",
 		Members: []model.RelationshipMember{
 			{
-				PersonID: "aa0063dc-734b-4215-8d34-a65a598b1dca",
-				Type:     relationship.Sibling,
+				PersonID:       "5",
+				RelationshipID: "201",
+				Type:           relationship.Sibling,
+			},
+			{
+				PersonID:       "1",
+				RelationshipID: "101",
+				Type:           relationship.Sibling,
 			},
 		},
 	}
 
-	err = relationshipService.relationshipUnallowed(ctx, mockRelationship)
+	persistenceDB.EXPECT().GetKinship(ctx, model.RelationshipMember{PersonID: mockRelationshipA.PersonID}).Return(mockRelationshipB.Members, nil)
 
-	require.Nil(t, err, "Don't occurred relationship unallowed")
+	err := relationshipService.relationshipUnallowed(ctx, mockRelationshipA)
 
-	ctx = context.WithValue(ctx, contextKey(testRelationshipUnallowed), "Unallowed incest between sibling from same parent")
+	require.Nil(t, err, "Relationship allowed")
 
-	mockRelationshipINDB := []model.RelationshipMember{
-		{
-			PersonID: "66c7c0f4-bf70-4afb-a099-d7d66df02fda",
-			Type:     relationship.Child,
-		},
-		{
-			PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e",
-			Type:     relationship.Child,
-		},
-	}
+	ctx = context.WithValue(ctx, contextKey(testRelationshipUnallowed), "Unallowed incest between child and mother")
 
-	mockRelationship = model.Relationship{
-		PersonID: "66c7c0f4-bf70-4afb-a099-d7d66df02fda",
+	mockRelationshipA = model.Relationship{
+		ID:       "104",
+		PersonID: "5",
 		Members: []model.RelationshipMember{
 			{
-				PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e",
-				Type:     relationship.Spouse,
+				PersonID:       "12",
+				RelationshipID: "104",
+				Type:           relationship.Spouse,
 			},
 		},
 	}
 
-	persistenceDB.EXPECT().GetKinship(ctx, model.RelationshipMember{PersonID: "2e0733ef-3df9-4c41-9a03-25769aa28d8e"}).Return(mockRelationshipINDB, nil)
+	mockRelationshipB = model.Relationship{
+		ID:       "204",
+		PersonID: "12",
+		Members: []model.RelationshipMember{
+			{
+				PersonID:       "5",
+				RelationshipID: "204",
+				Type:           relationship.Child,
+			},
+		},
+	}
 
-	err = relationshipService.relationshipUnallowed(ctx, mockRelationship)
+	persistenceDB.EXPECT().GetKinship(ctx, model.RelationshipMember{PersonID: mockRelationshipA.PersonID}).Return(mockRelationshipB.Members, nil)
 
-	require.NotNil(t, err, "Occurred relationship unallowed, then will returned error")
+	err = relationshipService.relationshipUnallowed(ctx, mockRelationshipA)
+
+	require.Nil(t, err, "Relationship allowed found")
+
+	ctx = context.WithValue(ctx, contextKey(testRelationshipUnallowed), "Relationship sibling")
+
+	mockRelationshipA = model.Relationship{
+		ID:       "401",
+		PersonID: "4",
+		Members: []model.RelationshipMember{
+			{
+				PersonID:       "3",
+				RelationshipID: "401",
+				Type:           relationship.Sibling,
+			},
+		},
+	}
+
+	mockRelationshipB = model.Relationship{
+		ID:       "501",
+		PersonID: "3",
+		Members: []model.RelationshipMember{
+			{
+				PersonID:       "4",
+				RelationshipID: "501",
+				Type:           relationship.Sibling,
+			},
+		},
+	}
+
+	persistenceDB.EXPECT().GetKinship(ctx, model.RelationshipMember{PersonID: mockRelationshipA.PersonID}).Return(mockRelationshipB.Members, nil)
+
+	err = relationshipService.relationshipUnallowed(ctx, mockRelationshipA)
+
+	require.Nil(t, err, "Relationship correct")
 
 }
 

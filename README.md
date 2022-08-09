@@ -17,6 +17,7 @@ Aplicação responsável por gerar árvore genealógica de uma pessoa
     * `[GET] /v1/person -> Listar todas as pessoa`
   * Relationship
     * `[POST] /v1/relationship -> Criar um novo relacionamento`
+    * `[GET] /v1/relationship/{{:PERSON_ID}} -> consultar o relacionamento de uma pessoa`
 
 Para facilitar o consumo da API, há uma [coleção de request](genealogy-tree.postman_collection.json) pré-definidas que pode ser usadas utilizando a ferramenta [postman versão 9.27.0+](https://www.postman.com/). \
 Basta importar essa coleção de request para o Postman. Quando importada, você terá uma collection chamada `genealogy-tree` e nessa collection terão os [endpoints](#endpoints) separados por pastas.

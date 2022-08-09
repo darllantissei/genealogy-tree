@@ -97,7 +97,7 @@
 							"script": {
 								"exec": [
 									"\r",
-									"pm.collectionVariables.set(\"PERSON_ID\", \"b0594c91-49a5-44eb-bcde-6b400489787a\")\r",
+									"pm.collectionVariables.set(\"PERSON_ID\", \"04102ca7-8464-430e-958f-9ac49452a9aa\")\r",
 									"\r",
 									"let typePayload = pm.request.body.options.raw.language;\r",
 									"\r",
@@ -169,7 +169,7 @@
 							"script": {
 								"exec": [
 									"pm.collectionVariables.set(\"FORM_REQUEST\", \"dfg\");\r",
-									"pm.collectionVariables.set(\"PERSON_ID\", \"b0594c91-49a5-44eb-bcde-6b400489787a\");"
+									"pm.collectionVariables.set(\"PERSON_ID\", \"04102ca7-8464-430e-958f-9ac49452a9aa\");"
 								],
 								"type": "text/javascript"
 							}
@@ -267,18 +267,18 @@
 									"\r",
 									"        // content json\r",
 									"        let payload = {\r",
-									"            person_id: \"\",\r",
-									"            member: [\r",
+									"            person_id: \"40c70acb-ad78-47ac-85c5-34d49e9144bf\",\r",
+									"            members: [\r",
 									"                {\r",
-									"                    person_id: \"\",\r",
+									"                    person_id: \"e6d53c7c-37c0-48fd-8442-cfc34390e899\",\r",
 									"                    type: \"parent\",\r",
 									"                },\r",
 									"                {\r",
-									"                    person_id: \"\",\r",
+									"                    person_id: \"5471da60-0822-4360-94ee-f9d9569b92d3\",\r",
 									"                    type: \"parent\",\r",
 									"                },\r",
 									"                {\r",
-									"                    person_id: \"\",\r",
+									"                    person_id: \"15ac8c62-ff79-4910-a9f0-a7cbf86c14f0\",\r",
 									"                    type: \"sibling\"\r",
 									"                }\r",
 									"            ]\r",
@@ -327,6 +327,49 @@
 							"path": [
 								"v1",
 								"relationship"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get relationship a perosn",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"FORM_REQUEST\", \"dfg\");\r",
+									"pm.collectionVariables.set(\"PERSON_ID\", \"40c70acb-ad78-47ac-85c5-34d49e9144bf\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{{FORM_REQUEST}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{HOST}}/v1/relationship/{{PERSON_ID}}",
+							"host": [
+								"{{HOST}}"
+							],
+							"path": [
+								"v1",
+								"relationship",
+								"{{PERSON_ID}}"
 							]
 						}
 					},
